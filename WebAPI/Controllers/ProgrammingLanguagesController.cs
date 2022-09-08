@@ -22,15 +22,15 @@ namespace WebAPI.Controllers
             return Created("", result);
         }
 
-        [HttpPatch("update")]
+        [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] UpdateProgrammingLanguageCommand updateProgrammingLanguageCommand)
         {
             UpdatedProgrammingLanguageDto result = await Mediator.Send(updateProgrammingLanguageCommand);
             return Ok(result);
         }
 
-        [HttpPatch("delete/{Id}")]
-        public async Task<IActionResult> Delete([FromRoute] DeleteProgrammingLanguageCommand deleteProgrammingLanguageCommand)
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete([FromBody] DeleteProgrammingLanguageCommand deleteProgrammingLanguageCommand)
         {
             DeletedProgrammingLanguageDto result = await Mediator.Send(deleteProgrammingLanguageCommand);
             return Ok(result);
@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
             return Ok(programmingLanguageListModel);
         }
 
-        [HttpGet("getById/{Id}")]
+        [HttpGet("{Id}")]
         public async Task<IActionResult> GetById([FromRoute] GetByIdProgrammingLanguageQuery getByIdProgrammingLanguageQuery)
         {
             ProgrammingLanguageGetByIdDto programmingLanguageGetByIdDto = await Mediator.Send(getByIdProgrammingLanguageQuery);
