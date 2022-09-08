@@ -46,6 +46,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{Id}")]
+        //route Id vermem gerekiyor
         public async Task<IActionResult> GetById([FromRoute] GetByIdProgrammingLanguageQuery getByIdProgrammingLanguageQuery)
         {
             ProgrammingLanguageGetByIdDto programmingLanguageGetByIdDto = await Mediator.Send(getByIdProgrammingLanguageQuery);
