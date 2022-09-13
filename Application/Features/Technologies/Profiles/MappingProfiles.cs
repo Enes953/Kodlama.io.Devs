@@ -30,6 +30,8 @@ namespace Application.Features.Technologies.Profiles
 
             CreateMap<Technology, DeleteTechnologyCommand>().ReverseMap();
             CreateMap<Technology, DeletedTechnologyDto>().ReverseMap();
+
+            CreateMap<Technology, TechnologyGetByIdDto>().ReverseMap();
         }
         
     }

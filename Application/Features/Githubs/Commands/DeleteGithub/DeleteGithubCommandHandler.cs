@@ -26,8 +26,6 @@ namespace Application.Features.Githubs.Commands.DeleteGithub
         }
         public async Task<DeletedGithubDto> Handle(DeleteGithubCommand request, CancellationToken cancellationToken)
         {
-            await _businessRules.GithubShouldExistWhenRequested(request.Id);
-
            Github? github = await _githubRepository.GetAsync(p => p.Id == request.Id);
            Github githubLanguage = await _githubRepository.DeleteAsync(github);
 

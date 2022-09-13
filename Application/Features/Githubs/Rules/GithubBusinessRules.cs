@@ -21,16 +21,13 @@ namespace Application.Features.Githubs.Rules
             _githubRepository = githubRepository;
             _userRepository = userRepository;
         }
-
-        public async Task GithubShouldExistWhenRequested(int id)
+        public void GithubShouldExistWhenRequested(Github github)
         {
-            Github? github = await _githubRepository.GetAsync(g => g.Id == id);
             if (github == null) throw new BusinessException("Requested technology does not exist.");
         }
-
-        public async Task UserShouldExistWhenRequested(int userUd)
+        public async Task UserShouldExistWhenRequested(int userId)
         {
-            User? user = await _userRepository.GetAsync(u => u.Id == userUd);
+            User? user = await _userRepository.GetAsync(u => u.Id == userId);
             if (user == null) throw new BusinessException("Requested user does not exist.");
         }
 

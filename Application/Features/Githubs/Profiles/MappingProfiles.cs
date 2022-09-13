@@ -2,7 +2,9 @@
 using Application.Features.Githubs.Commands.DeleteGithub;
 using Application.Features.Githubs.Commands.UpdateGithub;
 using Application.Features.Githubs.Dtos;
+using Application.Features.Githubs.Models;
 using AutoMapper;
+using Core.Persistence.Paging;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,9 @@ namespace Application.Features.Githubs.Profiles
     {
         public MappingProfiles()
         {
+            CreateMap<Github, GithubListDto>().ReverseMap();
+            CreateMap<GithubListModel, IPaginate<Github>>().ReverseMap();
+
             CreateMap<Github,CreateGithubCommand>().ReverseMap();
             CreateMap<Github,CreatedGithubDto>().ReverseMap();
 
@@ -24,6 +29,8 @@ namespace Application.Features.Githubs.Profiles
 
             CreateMap<Github, DeleteGithubCommand>().ReverseMap();
             CreateMap<Github,DeletedGithubDto>().ReverseMap();
+
+            CreateMap<Github, GithubGetByIdDto>().ReverseMap();
         }
     }
 }
