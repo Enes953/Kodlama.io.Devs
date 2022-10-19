@@ -46,9 +46,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("delete")]
-        public async Task<IActionResult> Delete([FromBody] DeleteTechnologyCommand deleteTechnologyLanguageCommand)
+        public async Task<IActionResult> Delete([FromBody] DeleteTechnologyCommand deleteTechnologyCommand)
         {
-            DeletedTechnologyDto result = await Mediator.Send(deleteTechnologyLanguageCommand);
+            DeletedTechnologyDto result = await Mediator.Send(deleteTechnologyCommand);
             return Ok(result);
         }
         [HttpGet("{Id}")]

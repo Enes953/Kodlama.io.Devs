@@ -1,4 +1,6 @@
-﻿using Application.Features.Auths.Rules;
+﻿using Application.Features.Auths.Dtos;
+using Application.Features.Auths.Rules;
+using Application.Services.AuthService;
 using Application.Services.Repositories;
 using AutoMapper;
 using Core.Persistence.Paging;
@@ -16,40 +18,51 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Auths.Commands.AuthRegister
 {
-    public class RegisterAuthCommand:UserForRegisterDto,IRequest<AccessToken>
+    public class RegisterAuthCommand:IRequest<RegisteredDto>
     {
-    }
-    public class RegisterAuthCommandHandler : IRequestHandler<RegisterAuthCommand, AccessToken>
-    {
-        private readonly IUserRepository _userRepository;
-        private readonly IUserOperationClaimRepository _userOperationClaimRepository;
-        private readonly IMapper _mapper;
-        private readonly ITokenHelper _tokenHelper;
-        private readonly AuthBusinessRules _authBusinessRules;
-
-        public RegisterAuthCommandHandler(IUserRepository userRepository, IUserOperationClaimRepository userOperationClaimRepository, IMapper mapper, ITokenHelper tokenHelper, AuthBusinessRules authBusinessRules)
+        public UserForRegisterDto UserForRegisterDto { get; set; }
+        public string IpAddress { get; set; }
+        public class RegisterAuthCommandHandler : IRequestHandler<RegisterAuthCommand, RegisteredDto>
         {
-            _userRepository = userRepository;
-            _userOperationClaimRepository = userOperationClaimRepository;
-            _mapper = mapper;
-            _tokenHelper = tokenHelper;
-            _authBusinessRules = authBusinessRules;
-        }
-        public async Task<AccessToken> Handle(RegisterAuthCommand request, CancellationToken cancellationToken)
-        {
-            await _authBusinessRules.AuthRegisterNameCanNotBeDuplicatedWhenInserted(request.Email);
+            private readonly IUserRepository _userRepository;
+            private readonly IAuthService _authService;
+            private readonly IMapper _mapper;    
+            private readonly AuthBusinessRules _authBusinessRules;
+            public RegisterAuthCommandHandler(IUserRepository userRepository, IAuthService authService, IMapper mapper, AuthBusinessRules authBusinessRules)
+            {
+                _userRepository = userRepository;
+                _authService = authService;
+                _mapper = mapper;
+                _authBusinessRules = authBusinessRules;
+            }
 
-            Byte[] passwordHash, passwordSalt;
-            HashingHelper.CreatePasswordHash(request.Password,out passwordHash,out passwordSalt);
+            public async Task<RegisteredDto> Handle(RegisterAuthCommand request, CancellationToken cancellationToken)
+            {
+                await _authBusinessRules.EmailCanNotBeDuplicatedWhenInserted(request.UserForRegisterDto.Email);
 
-            User user = _mapper.Map<User>(request);
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            user.Status = true;
+                Byte[] passwordHash, passwordSalt;
+                HashingHelper.CreatePasswordHash(request.UserForRegisterDto.Password, out passwordHash, out passwordSalt);
 
-            User newUser = await _userRepository.AddAsync(user);
-            var token = _tokenHelper.CreateToken(newUser, new List<OperationClaim>());
-            return token;
+                User user = _mapper.Map<User>(request);
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                user.FirstName = request.UserForRegisterDto.FirstName;
+                user.LastName = request.UserForRegisterDto.LastName;
+                user.Email = request.UserForRegisterDto.Email;
+                user.Status = true;
+
+                User createdUser = await _userRepository.AddAsync(user);
+                AccessToken createdAccessToken = await _authService.CreateAccessToken(createdUser);
+                RefreshToken createdRefreshToken = await _authService.CreateRefreshToken(createdUser, request.IpAddress);
+                RefreshToken addedRefreshToken = await _authService.AddRefreshToken(createdRefreshToken);
+
+                RegisteredDto registeredDto = new()
+                {
+                    RefreshToken = addedRefreshToken,
+                    AccessToken = createdAccessToken,
+                };
+                return registeredDto;
+            }
         }
     }
 }

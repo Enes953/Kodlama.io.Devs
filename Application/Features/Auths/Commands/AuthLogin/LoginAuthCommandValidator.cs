@@ -11,9 +11,9 @@ namespace Application.Features.Auths.Commands.AuthLogin
     {
         public LoginAuthCommandValidator()
         {
-            RuleFor(l => l.Email).NotEmpty();
-            RuleFor(l => l.Email).EmailAddress();
-            RuleFor(l => l.Password).NotEmpty();
+            RuleFor(l => l.UserForLoginDto.Email).NotEmpty();
+            RuleFor(l => l.UserForLoginDto.Email).EmailAddress();
+            RuleFor(l => l.UserForLoginDto.Password).NotEmpty();
         }
     }
 }

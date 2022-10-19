@@ -18,15 +18,15 @@ namespace Application.Features.Auths.Rules
         {
             _userRepository = userRepository;
         }
-        public async Task AuthRegisterNameCanNotBeDuplicatedWhenInserted(string email)
+        public async Task EmailCanNotBeDuplicatedWhenInserted(string email)
         {
-            IPaginate<User> result = await _userRepository.GetListAsync(u => u.Email == email);
-            if (result.Items.Any()) throw new BusinessException("There is such an email in the system.");
+           User? user = await _userRepository.GetAsync(u => u.Email == email);
+            if (user !=null) throw new BusinessException("There is such an email in the system.");
         }
         public async Task AuthLoginEmailCheck(string email)
         {
-            User result = await _userRepository.GetAsync(u => u.Email == email);
-            if (result == null) throw new BusinessException("Such an email was not found in the system.");
+            User? user = await _userRepository.GetAsync(u => u.Email == email);
+            if (user == null) throw new BusinessException("Such an email was not found in the system.");
         }
     }
 }

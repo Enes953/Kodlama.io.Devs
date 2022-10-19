@@ -1,4 +1,6 @@
-﻿using Application.Features.Auths.Rules;
+﻿using Application.Features.Auths.Dtos;
+using Application.Features.Auths.Rules;
+using Application.Services.AuthService;
 using Application.Services.Repositories;
 using Core.CrossCuttingConcerns.Exceptions;
 using Core.Persistence.Paging;
@@ -16,37 +18,37 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Auths.Commands.AuthLogin
 {
-    public class LoginAuthCommand:UserForLoginDto,IRequest<AccessToken>
+    public class LoginAuthCommand:IRequest<LoginedDto>
     {
+        public UserForLoginDto UserForLoginDto { get; set; }
+        public string IpAddress { get; set; }
     }
-    public class LoginAuthCommandHandler : IRequestHandler<LoginAuthCommand, AccessToken>
+    public class LoginAuthCommandHandler : IRequestHandler<LoginAuthCommand, LoginedDto>
     {
         private readonly IUserRepository _userRepository;
-        private readonly ITokenHelper _tokenHelper;
-        private readonly IUserOperationClaimRepository _userOperationClaimRepository;
+        private readonly IAuthService _authService;
         private readonly AuthBusinessRules _authBusinessRules;
-        public LoginAuthCommandHandler(IUserRepository userRepository, ITokenHelper tokenHelper, IUserOperationClaimRepository userOperationClaimRepository, AuthBusinessRules authBusinessRules)
+        public LoginAuthCommandHandler(IUserRepository userRepository, IAuthService authService, AuthBusinessRules authBusinessRules)
         {
             _userRepository = userRepository;
-            _tokenHelper = tokenHelper;
-            _userOperationClaimRepository = userOperationClaimRepository;
+            _authService = authService;
             _authBusinessRules = authBusinessRules;
         }
 
-        public async Task<AccessToken> Handle(LoginAuthCommand request, CancellationToken cancellationToken)
+        public async Task<LoginedDto> Handle(LoginAuthCommand request, CancellationToken cancellationToken)
         {
-            await _authBusinessRules.AuthLoginEmailCheck(request.Email);
+            await _authBusinessRules.AuthLoginEmailCheck(request.UserForLoginDto.Email);
+            User user = await _userRepository.GetAsync(u => u.Email == request.UserForLoginDto.Email);
 
-            User user = await _userRepository.GetAsync(u => u.Email == request.Email);
-            if (!HashingHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-                throw new BusinessException("The password you entered is incorrect.");
+            var createdAccessToken = await _authService.CreateAccessToken(user);
+            var createdRefreshToken = await _authService.CreateRefreshToken(user, request.IpAddress);
+            var addedRefreshToken = await _authService.AddRefreshToken(createdRefreshToken);
 
-            IPaginate<UserOperationClaim> userGetClaims = await _userOperationClaimRepository.GetListAsync(u => u.UserId == user.Id,
-                include: i => i.Include(i => i.OperationClaim));
-
-            AccessToken accessToken = _tokenHelper.CreateToken(user, userGetClaims.Items.Select(u => u.OperationClaim).ToList());
-
-            return accessToken;
+            return new LoginedDto()
+            {
+                AccessToken = createdAccessToken,
+                RefreshToken = addedRefreshToken
+            };
         }
     }
 }
