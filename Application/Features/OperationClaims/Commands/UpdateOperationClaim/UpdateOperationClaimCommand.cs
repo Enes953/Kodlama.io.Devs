@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 
 namespace Application.Features.OperationClaims.Commands.UpdateOperationClaim
 {
-    public class UpdateOperationClaimCommand : IRequest<UpdatedOperationClaimDto>, ISecuredRequest
+    public class UpdateOperationClaimCommand : IRequest<UpdatedOperationClaimDto>,ISecuredRequest
     {
         public int Id { get; set; }
         public string Name { get; set; }
+
         public string[] Roles { get; } = { OperationClaimRoles.OperationClaimAdmin, OperationClaimRoles.OperationClaimUpdate };
+
     }
 }

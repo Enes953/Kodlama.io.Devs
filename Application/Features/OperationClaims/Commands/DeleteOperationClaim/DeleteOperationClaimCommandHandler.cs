@@ -27,9 +27,8 @@ namespace Application.Features.OperationClaims.Commands.DeleteOperationClaim
         {
             await _operationClaimBusinessRules.OperationClaimIdShouldBeExist(request.Id);
 
-            OperationClaim mappedOperationClaim = _mapper.Map<OperationClaim>(request);
-            OperationClaim deletedOperationClaim = await _operationClaimRepository.DeleteAsync(mappedOperationClaim);
-
+            OperationClaim? operationClaim = await _operationClaimRepository.GetAsync(o => o.Id == request.Id);
+            OperationClaim deletedOperationClaim = await _operationClaimRepository.DeleteAsync(operationClaim);
             DeletedOperationClaimDto deletedOperationClaimDto = _mapper.Map<DeletedOperationClaimDto>(deletedOperationClaim);
             return deletedOperationClaimDto;
         }

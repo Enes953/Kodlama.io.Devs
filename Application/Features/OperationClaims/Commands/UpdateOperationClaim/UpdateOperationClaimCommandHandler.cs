@@ -30,12 +30,12 @@ namespace Application.Features.OperationClaims.Commands.UpdateOperationClaim
             await _operationClaimBusinessRules.NameCanNotBeDuplicatedWhenInserted(request.Name);
             await _operationClaimBusinessRules.OperationClaimIdShouldBeExist(request.Id);
 
-            OperationClaim mappedOperationClaim = _mapper.Map<OperationClaim>(request);
-            OperationClaim? updatedOperationClaim = await _operationClaimRepository.UpdateAsync(mappedOperationClaim);
+            var operationClaim = await _operationClaimRepository.GetAsync(x => x.Id == request.Id);
+            var mappedOperationClaim = _mapper.Map(request, operationClaim);
+            var updatedOperationClaim = await _operationClaimRepository.UpdateAsync(mappedOperationClaim);
+            var mappedUpdatedOperationClaim = _mapper.Map<UpdatedOperationClaimDto>(updatedOperationClaim);
+            return mappedUpdatedOperationClaim;
 
-            UpdatedOperationClaimDto updatedOperationClaimDto = _mapper.Map<UpdatedOperationClaimDto>(updatedOperationClaim);
-
-            return updatedOperationClaimDto;
         }
     }
 }

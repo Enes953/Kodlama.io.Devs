@@ -8,12 +8,12 @@ namespace Application.Features.OperationClaims.Constants
 {
     public class OperationClaimRoles
     {
-        public const string OperationClaimAdmin = "OperationClaim.Admin";
+        public const string OperationClaimAdmin = "Admin";
 
-        public const string OperationClaimCreate = "OperationClaim.Create";
-        public const string OperationClaimDelete = "OperationClaim.Delete";
-        public const string OperationClaimUpdate = "OperationClaim.Update";
+        public const string OperationClaimCreate = "Create";
+        public const string OperationClaimDelete = "Delete";
+        public const string OperationClaimUpdate = "Update";
 
-        public const string OperationClaimRead = "OperationClaim.Read";
+        public const string OperationClaimRead = "Read";
     }
 }

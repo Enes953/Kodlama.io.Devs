@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.OperationClaims.Commands.CreateOperationClaim
 {
-    public class CreateOperationClaimCommand : IRequest<CreatedOperationClaimDto>, ISecuredRequest
+    public class CreateOperationClaimCommand : IRequest<CreatedOperationClaimDto>,ISecuredRequest
     {
         public string Name { get; set; }
         public string[] Roles { get; } = {OperationClaimRoles.OperationClaimAdmin,OperationClaimRoles.OperationClaimCreate};

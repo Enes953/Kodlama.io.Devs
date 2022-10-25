@@ -8,20 +8,18 @@ using Microsoft.OpenApi.Models;
 using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
-var tokenOptions = builder.Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
-
-
 // Add services to the container.
-
 builder.Services.AddControllers();
-builder.Services.AddApplicationServices();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddPersistenceServices(builder.Configuration);
-builder.Services.AddSecurityServices();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddSwaggerGen();
 
+builder.Services.AddSecurityServices();
+builder.Services.AddApplicationServices();
+builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+
+var tokenOptions = builder.Configuration.GetSection(key: "TokenOptions").Get<TokenOptions>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -32,9 +30,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidIssuer = tokenOptions.Issuer,
         ValidAudience = tokenOptions.Audience,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+        IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
     };
 });
+
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -65,12 +64,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//if (app.Environment.IsProduction())
-//   app.ConfigureCustomExceptionMiddleware();
+
+if (app.Environment.IsProduction())
+    app.ConfigureCustomExceptionMiddleware();
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

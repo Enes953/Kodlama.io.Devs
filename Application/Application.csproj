@@ -16,12 +16,5 @@
 		<ProjectReference Include="..\Core\Core.csproj" />
 		<ProjectReference Include="..\Domain\Domain.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Features\OperationClaims\Queries\" />
-	  <Folder Include="Features\UserOperationClaims\Commands\DeleteUserOperationClaim\" />
-	  <Folder Include="Features\UserOperationClaims\Commands\UpdateUserOperationClaim\" />
-	  <Folder Include="Features\UserOperationClaims\Queries\" />
-	</ItemGroup>
 	
 </Project>

@@ -8,11 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Features.OperationClaims.Commands.DeleteOperationClaim
+namespace Application.Features.OperationClaims.Queries.GetByIdOperationClaim
 {
-    public class DeleteOperationClaimCommand : IRequest<DeletedOperationClaimDto>,ISecuredRequest
+    public class GetByIdOperationClaimQuery:IRequest<OperationClaimGetByIdDto>,ISecuredRequest
     {
         public int Id { get; set; }
-        public string[] Roles { get; } = { OperationClaimRoles.OperationClaimAdmin, OperationClaimRoles.OperationClaimDelete };
+        public string[] Roles { get; } ={OperationClaimRoles.OperationClaimAdmin,OperationClaimRoles.OperationClaimRead};
     }
 }
