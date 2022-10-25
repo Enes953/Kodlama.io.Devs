@@ -40,7 +40,7 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpGet("GetList")]
         public async Task<IActionResult> GetList([FromQuery] PageRequest pageRequest)
         {
             GetListOperationClaimQuery getListOperationClaimQuery = new() { PageRequest = pageRequest };
